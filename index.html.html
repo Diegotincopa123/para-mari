@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Historia - Feliz Aniversario</title>
+    <style>
+        /* Configuración General */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #e0f2fe, #fbcfe8);
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1500px;
+        }
+
+        /* Contenedor Principal del Libro */
+        .book-container {
+            position: relative;
+            width: 850px;
+            height: 550px;
+            background: #fff;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            display: flex;
+            z-index: 10;
+            overflow: hidden;
+            border: 8px solid #fff;
+        }
+
+        /* Línea central que simula el pliegue del libro */
+        .book-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.15), transparent);
+            z-index: 15;
+            transform: translateX(-50%);
+        }
+
+        /* Lados del Libro */
+        .book-side {
+            width: 50%;
+            height: 100%;
+            position: relative;
+            background: #faf8f5; /* Color papel suave */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            overflow: hidden;
+        }
+
+        /* Lado Izquierdo: Contenedor de Foto */
+        .photo-area {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            background: #f0f0f0;
+            position: relative;
+        }
+
+        .photo-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Lado Derecho: Contenedor de Texto */
+        .text-area {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #374151;
+            padding: 10px;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .text-content {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #4b5563;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            max-height: 85%;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Títulos especiales para Portada y Cierre */
+        .title-special {
+            color: #be185d;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        /* Botones de Navegación */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0,0,0,0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #be185d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #be185d;
+            color: #fff;
+            scale: 1.1;
+        }
+
+        .btn-prev { left: -25px; }
+        .btn-next { right: -25px; }
+
+        /* Efecto de transiciones */
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* Fondo Decorativo de Flores (Lirios y Tulipanes) */
+        .campo-flores {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: 0 20px;
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        .flor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transform-origin: bottom center;
+            animation: balanceo 4s ease-in-out infinite alternate;
+        }
+        .tallo { width: 4px; height: 80px; background: linear-gradient(to top, #15803d, #22c55e); border-radius: 2px; }
+        .flor:nth-child(even) { animation-delay: -1.5s; }
+
+        /* Lirio sutil */
+        .lirio .capullo {
+            width: 30px; height: 25px; background: #fff5f5; border-radius: 50% 50% 20% 20%;
+            border-bottom: 2px solid #f472b6; box-shadow: inset 0 -5px 10px rgba(244, 114, 182, 0.3);
+        }
+        /* Tulipán sutil */
+        .tulipan .capullo {
+            width: 22px; height: 32px; background: #f43f5e; border-radius: 50% 50% 30% 30%;
+        }
+
+        @keyframes balanceo { 0% { transform: rotate(-2deg); } 100% { transform: rotate(3deg); } }
+
+        /* Pétalos volando */
+        .petalo {
+            position: absolute; background: rgba(251, 113, 133, 0.5);
+            border-radius: 50% 0 50% 50%; animation: caer linear infinite; z-index: 1;
+        }
+        @keyframes caer {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Adaptabilidad básica para pantallas medianas */
+        @media (max-width: 900px) {
+            .book-container { width: 95%; height: 500px; }
+            .text-content { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botones para pasar páginas -->
+    <button class="nav-btn btn-prev" onclick="cambiarPagina(-1)">❮</button>
+    
+    <div class="book-container">
+        <!-- Lado Izquierdo (Fotos) -->
+        <div class="book-side">
+            <div class="photo-area">
+                <img id="libro-foto" src="" alt="Nuestra Foto">
+            </div>
+        </div>
+
+        <!-- Lado Derecho (Dedicatorias) -->
+        <div class="book-side">
+            <div class="text-area">
+                <div id="libro-texto" class="text-content">
+                    <!-- El script inyectará el texto dinámicamente aquí -->
+                </div>
+                <div id="numero-pagina" class="page-number"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="nav-btn btn-next" onclick="cambiarPagina(1)">❯</button>
+
+    <!-- Campo decorativo inferior -->
+    <div class="campo-flores">
+        <div class="flor tulipan"><div class="capullo"></div><div class="tallo"></div></div>
+        <div class="flor lirio"><div class="capullo"></div><div class="tallo"></div></div>
+        <div class="flor tulipan"><div class="capullo"></div><div class="tallo"></div></div>
+        <div class="flor lirio"><div class="capullo"></div><div class="tallo"></div></div>
+        <div class="flor tulipan"><div class="capullo"></div><div class="tallo"></div></div>
+    </div>
+
+    <script>
+        // Arreglo maestro con textos y extensiones específicas mapeadas por archivo
+        const paginas = [
+            {
+                extension: '.jpeg',
+                texto: "<h2 class='title-special'>Feliz Aniversario<br>Mi Mari Hermosa</h2><p>Tus ojos me parecen los más hermosos del mundo, son los únicos que quiero ver por el resto de mi vida te lo juro. No imagino una vida sin ti mi negrita bella, te amo con todo mi corazón. Este tiempo que hemos estado juntos han sido sin duda los mejores de mi vida, mi negrita de ojitos bellos. ❤</p>"
+            },
+            {
+                extension: '.jpeg',
+                texto: "<p>Así estés desarreglada con el cabello todo loco y enredado me sigues pareciendo la mujer más hermosa del mundo. Me he enamorado de cada lado tuyo: así estés enojada, triste, feliz o irritada... amo absolutamente todo lo que haga de ti mi negrita hermosa. 😍</p>"
+            },
+            {
+                extension: '.png',
+                texto: "<p>Amo en serio nuestras salidas, me encantan. Lo tontos que somos juntos, decimos cada tontería y bobada... me encanta demasiado estar contigo, me haces inmensamente feliz negrita bella. Puedo ser yo mismo cada que estoy contigo y siempre la pasamos bien. Te amo con todo mi corazón preciosa. ✨</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Siempre que te veo me imagino cómo será nuestra vida más adelante y es demasiado lindo tenerte al lado y saber que, de una forma u otra, tú y yo estaremos juntos para siempre mi princesita. 🏠💞</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Para mí eres la mujer más hermosa del mundo cuando usas tus vestidos, sea como sea te ves perfecta. Me impresiona verte... tu vestido rojo te queda precioso, tu vestido negro, absolutamente todos te quedan hermosos preciosa. Me encantas como ni te imaginas, negrita bella. 👗🌹</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Me encanta que nos parezcamos tanto. Hacer cualquier cosa es saber que la pasaremos bien. Te amo todo el tiempo y en cualquier lugar o situación. 🔗❤️</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Tus rizos me encantan, se me hacen la cosa más hermosa del mundo. Tu carita preciosa y tus rizos hermosos me fascinan. Sé que te lleva tiempo hacértelos, pero en serio te quedan realmente hermosos mi negrita linda. 🌀💖</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Incluso distraída te ves hermosa. Esta foto te la tomé distraída y no sabes lo preciosa que sales con ese perfil precioso que tienes. ¡Me hace afirmar que estoy con una modelo en su totalidad! 📸✨</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<p>Cuando fuimos a Miraflores a que te hicieran tu tratamiento del cabello creí que estaría aburrido, no por ti sino porque nunca había estado en uno de esos salones. Después de que me relajara tanto en el tratamiento como en el corte, me hizo darme cuenta que contigo hago cosas que antes ni pensaba en hacerlas y que me la paso muy bien. Además, verte en la puesta de sol toda de blanco me hace extremadamente feliz. Te adoro preciosa. 🌅🤍</p>"
+            },
+            {
+                extension: '.jfif',
+                texto: "<h2 class='title-special' style='font-size:1.8rem; color:#db2777;'>El Futuro es Tuyo</h2><p>Y para cerrar con broche de oro, verte con tu <strong>scrub</strong>... no sabes cómo me gusta, te ves toda una médica egresada. Sé que de alguna forma u otra llegarás a cumplir tu sueño de ser doctora y sé que serás la mejor de todas. Eres única, sé cuánto te esfuerzas por llegar a esa meta y te apoyaré de la forma que sea necesaria para que llegues. <strong>Te amo mi Mari hermosa.</strong> 🩺👩‍⚕️❤️</p>"
+            }
+        ];
+
+        let paginaActual = 0;
+
+        const fotoElement = document.getElementById('libro-foto');
+        const textoElement = document.getElementById('libro-texto');
+        const numeroPaginaElement = document.getElementById('numero-pagina');
+
+        // Función dinámica de renderizado
+        function cargarPagina() {
+            fotoElement.classList.add('fade-out');
+            textoElement.classList.add('fade-out');
+
+            setTimeout(() => {
+                // Selecciona la extensión correcta según el índice del arreglo
+                const extActual = paginas[paginaActual].extension;
+                
+                fotoElement.src = `Foto${paginaActual + 1}${extActual}`;
+                textoElement.innerHTML = paginas[paginaActual].texto;
+                numeroPaginaElement.innerText = `Pág. ${paginaActual + 1} de ${paginas.length}`;
+
+                fotoElement.classList.remove('fade-out');
+                textoElement.classList.remove('fade-out');
+            }, 400);
+        }
+
+        function cambiarPagina(direccion) {
+            paginaActual += direccion;
+
+            if (paginaActual < 0) {
+                paginaActual = paginas.length - 1;
+            } else if (paginaActual >= paginas.length) {
+                paginaActual = 0;
+            }
+
+            cargarPagina();
+        }
+
+        // Carga inicial obligatoria
+        cargarPagina();
+
+        // Generador de pétalos flotantes en bucle
+        function crearPetalo() {
+            const petalo = document.createElement('div');
+            petalo.classList.add('petalo');
+            const tam = Math.random() * 8 + 8;
+            petalo.style.width = `${tam}px`;
+            petalo.style.height = `${tam * 1.4}px`;
+            petalo.style.left = Math.random() * 100 + 'vw';
+            petalo.style.animationDuration = Math.random() * 3 + 4 + 's';
+            document.body.appendChild(petalo);
+            setTimeout(() => petalo.remove(), 7000);
+        }
+        setInterval(crearPetalo, 500);
+    </script>
+</body>
+</html>
